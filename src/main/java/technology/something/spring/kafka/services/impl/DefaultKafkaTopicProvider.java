@@ -13,6 +13,9 @@ import java.util.Map;
 public class DefaultKafkaTopicProvider implements KafkaTopicProvider {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultKafkaTopicProvider.class);
 
+    /**
+     * Map defined by specified Record class and topic name
+     */
     private final Map<Class<? extends SpecificRecord>, String> map = new HashMap<>();
 
     @Override

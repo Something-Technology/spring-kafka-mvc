@@ -16,7 +16,6 @@ import technology.something.spring.kafka.KafkaMessageInfo;
 import technology.something.spring.kafka.KafkaRequestData;
 import technology.something.spring.kafka.services.KafkaConsumerService;
 import technology.something.spring.kafka.services.KafkaMessageHandlerService;
-import technology.something.spring.kafka.services.KafkaTopicProvider;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
@@ -27,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * The Kafka consumer service should be run from the microservice where this mvc project has been implemented.
+ */
 @Service
 public class DefaultKafkaConsumerService implements KafkaConsumerService {
 
@@ -40,7 +42,7 @@ public class DefaultKafkaConsumerService implements KafkaConsumerService {
     private ConsumerFactory<String, String> consumerFactory;
 
     @Autowired
-    private KafkaTopicProvider topicProvider;
+    private DefaultKafkaTopicProvider topicProvider;
 
     @PostConstruct
     public void postConstruct() {
@@ -48,19 +50,22 @@ public class DefaultKafkaConsumerService implements KafkaConsumerService {
         applicationContext.getBeansWithAnnotation(Controller.class).forEach((key, object) -> {
             List<Method> list = Arrays.asList(object.getClass().getMethods());
             Set foundTopics = list.stream().filter(method -> method.isAnnotationPresent(KafkaConsumer.class))
-                    .map(this::extractTopicName)
-                    .filter(topicName -> topicName != null)
-                    .collect(Collectors.toSet());
+                .map(this::extractTopicName)
+                .filter(topicName -> topicName != null)
+                .collect(Collectors.toSet());
             allConsumedTopics.addAll(foundTopics);
         });
-        ContainerProperties containerProperties = new ContainerProperties(allConsumedTopics.toArray(new String[allConsumedTopics.size()]));
-        containerProperties.setMessageListener((MessageListener<String, SpecificRecord>) record -> {
-            KafkaRequestData requestData = new KafkaRequestData(record);
-            Message<KafkaRequestData> message = MessageBuilder.withPayload(requestData).setHeader(KafkaMessageInfo.HEADER_TYPE, record.value().getClass().getName()).build();
-            kafkaMessageHandlerService.handleMessage(message);
-        });
-        KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
-        container.start();
+
+        if (!allConsumedTopics.isEmpty()) {
+            ContainerProperties containerProperties = new ContainerProperties(allConsumedTopics.toArray(new String[allConsumedTopics.size()]));
+            containerProperties.setMessageListener((MessageListener<String, SpecificRecord>) record -> {
+                KafkaRequestData requestData = new KafkaRequestData(record);
+                Message<KafkaRequestData> message = MessageBuilder.withPayload(requestData).setHeader(KafkaMessageInfo.HEADER_TYPE, record.value().getClass().getName()).build();
+                kafkaMessageHandlerService.handleMessage(message);
+            });
+            KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
+            container.start();
+        }
     }
 
     private String extractTopicName(Method method) {

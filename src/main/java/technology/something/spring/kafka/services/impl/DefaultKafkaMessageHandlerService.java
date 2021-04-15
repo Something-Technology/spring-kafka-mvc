@@ -24,6 +24,11 @@ import technology.something.spring.kafka.services.KafkaMethodReturnValueHandlerS
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * Kafka message handler is responsible for the mapping of the Kafka messages.
+ * The Kafka message will be read and mapped to the right type
+ */
+
 @Service
 public class DefaultKafkaMessageHandlerService extends AbstractMethodMessageHandler<KafkaMessageInfo>implements KafkaMessageHandlerService {
 
