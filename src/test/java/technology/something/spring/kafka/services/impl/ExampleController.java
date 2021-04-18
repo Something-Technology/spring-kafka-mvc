@@ -1,20 +1,17 @@
 package technology.something.spring.kafka.services.impl;
 
 import org.apache.avro.Schema;
-import org.apache.avro.specific.SpecificRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import technology.something.spring.kafka.KafkaConsumer;
+import technology.something.spring.kafka.MessageController;
 
 @Controller
-public class MessageController implements SpecificRecord {
+public class ExampleController extends MessageController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MessageController.class);
-
-    @Autowired
-    private DefaultKafkaTopicProvider topicProvider;
+    private static final Logger LOG = LoggerFactory.getLogger(ExampleController.class);
 
     @Autowired
     private DefaultKafkaMethodReturnValueHandlerService producer;
@@ -31,8 +28,8 @@ public class MessageController implements SpecificRecord {
             return;
         }
 
-        if (topicProvider.fetchTopicForRecord(MessageController.class) == null) {
-            topicProvider.registerTopic(topic, MessageController.class);
+        if (topicProvider.fetchTopicForRecord(ExampleController.class) == null) {
+            topicProvider.registerTopic(topic, ExampleController.class);
             LOG.info("Registering topic: ", topic);
         }
         LOG.info("Consuming message topic: ", topic);

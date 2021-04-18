@@ -22,7 +22,7 @@ class ConsumerTest {
     private DefaultKafkaConsumerService service;
 
     @Autowired
-    private MessageController controller;
+    private ExampleController controller;
 
     @Autowired
     private DefaultKafkaTopicProvider topicProvider;
@@ -32,7 +32,7 @@ class ConsumerTest {
         String topic = "COLLECT_COORDINATES";
         controller.consume(topic);
 
-        Assert.assertEquals(topic, topicProvider.fetchTopicForRecord(MessageController.class));
+        Assert.assertEquals(topic, topicProvider.fetchTopicForRecord(ExampleController.class));
     }
 
 }

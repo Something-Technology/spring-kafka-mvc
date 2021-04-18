@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 public class ProducerTest {
 
     @InjectMocks
-    private MessageController controller;
+    private ExampleController controller;
 
     @Mock
     private DefaultKafkaMethodReturnValueHandlerService producerService;
