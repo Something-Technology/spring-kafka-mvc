@@ -52,7 +52,7 @@ public class DefaultKafkaMessageHandlerService extends AbstractMethodMessageHand
     @Override public KafkaMessageInfo getMappingForMethod(Method method, Class<?> handlerType) {
         KafkaConsumer consumer = method.getAnnotation(KafkaConsumer.class);
         if (consumer != null) {
-            return new KafkaMessageInfo(method.getParameters()[0].getType().getName().toString());
+            return new KafkaMessageInfo(consumer.value().getSimpleName());
         }
         return null;
     }

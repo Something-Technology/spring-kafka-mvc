@@ -7,4 +7,7 @@ public interface KafkaTopicProvider {
     public void registerTopic(String topicName, Class<? extends SpecificRecord> clazz);
 
     public String fetchTopicForRecord(Class<? extends SpecificRecord> clazz);
+
+    public SpecificRecord fetchRecordForTopic(String topic);
+
 }

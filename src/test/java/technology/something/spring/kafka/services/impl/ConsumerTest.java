@@ -29,10 +29,18 @@ class ConsumerTest {
 
     @Test
     void consumeTopicWillFindRecord() {
-        String topic = "COLLECT_COORDINATES";
-        controller.consume(topic);
+        String topic = "EXAMPLE_REQUEST";
+        controller.consume();
 
-        Assert.assertEquals(topic, topicProvider.fetchTopicForRecord(ExampleController.class));
+        Assert.assertEquals(topic, topicProvider.fetchTopicForRecord(ExampleMessage.class));
+    }
+
+    @Test
+    void consumeNotRegisteredTopicWontFindRecord() {
+        String topic = "OTHER_REQUEST";
+        controller.consume();
+
+        Assert.assertNotEquals(topic, topicProvider.fetchTopicForRecord(ExampleMessage.class));
     }
 
 }

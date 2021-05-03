@@ -1,6 +1,5 @@
 package technology.something.spring.kafka.services.impl;
 
-import org.apache.avro.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +15,19 @@ public class ExampleController extends MessageController {
     @Autowired
     private DefaultKafkaMethodReturnValueHandlerService producer;
 
-    @KafkaConsumer
-    public void consume(String topic) {
-        if (topic.isEmpty()) {
-            LOG.error("No topic provided.");
-            return;
-        }
+    @KafkaConsumer(ExampleMessage.class)
+    public void consume() {
 
         if (topicProvider == null) {
             LOG.error("Topic provider not available.");
             return;
         }
 
-        if (topicProvider.fetchTopicForRecord(ExampleController.class) == null) {
-            topicProvider.registerTopic(topic, ExampleController.class);
-            LOG.info("Registering topic: ", topic);
+        if (topicProvider.fetchTopicForRecord(ExampleMessage.class) == null) {
+            topicProvider.registerTopic(ExampleMessage.TOPIC, ExampleMessage.class);
+            LOG.info("Registering topic: ", ExampleMessage.TOPIC);
         }
-        LOG.info("Consuming message topic: ", topic);
+        LOG.info("Consuming message topic: ", ExampleMessage.TOPIC);
     }
 
     public void produceMessage(ExampleMessage message) {
@@ -43,18 +38,4 @@ public class ExampleController extends MessageController {
         }
     }
 
-    @Override
-    public void put(int i, Object v) {
-
-    }
-
-    @Override
-    public Object get(int i) {
-        return null;
-    }
-
-    @Override
-    public Schema getSchema() {
-        return null;
-    }
 }

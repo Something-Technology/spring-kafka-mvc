@@ -1,14 +1,16 @@
 package technology.something.spring.kafka;
 
-import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.Schema;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.Decoder;
 import org.apache.avro.io.DecoderFactory;
-import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.avro.reflect.ReflectDatumReader;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import technology.something.spring.kafka.services.impl.DefaultKafkaTopicProvider;
 
 import java.util.Map;
 
@@ -16,10 +18,10 @@ public class KafkaAvroDeserializer<T extends SpecificRecordBase> implements Dese
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaAvroDeserializer.class);
 
-    protected final Class<T> targetType;
+    private DefaultKafkaTopicProvider topicProvider;
 
-    public KafkaAvroDeserializer(Class<T> targetType) {
-        this.targetType = targetType;
+    public KafkaAvroDeserializer(DefaultKafkaTopicProvider topicProvider) {
+        this.topicProvider = topicProvider;
     }
 
     @Override
@@ -32,9 +34,11 @@ public class KafkaAvroDeserializer<T extends SpecificRecordBase> implements Dese
         T returnObject = null;
 
         try {
+            SpecificRecord record = topicProvider.fetchRecordForTopic(topic);
+            Schema schema = record.getSchema();
 
             if (bytes != null) {
-                DatumReader<GenericRecord> datumReader = new SpecificDatumReader<>(targetType.newInstance().getSchema());
+                DatumReader<SpecificRecord> datumReader = new ReflectDatumReader<>(schema);
                 Decoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
                 returnObject = (T) datumReader.read(null, decoder);
                 LOG.info("deserialized data='{}'", returnObject.toString());
@@ -50,4 +54,5 @@ public class KafkaAvroDeserializer<T extends SpecificRecordBase> implements Dese
     public void close() {
         // do nothing
     }
+
 }

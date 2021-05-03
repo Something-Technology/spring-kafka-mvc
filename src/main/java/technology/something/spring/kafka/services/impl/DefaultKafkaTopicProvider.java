@@ -1,6 +1,7 @@
 package technology.something.spring.kafka.services.impl;
 
 import org.apache.avro.specific.SpecificRecord;
+import org.apache.avro.specific.SpecificRecordBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import technology.something.spring.kafka.services.KafkaTopicProvider;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class DefaultKafkaTopicProvider implements KafkaTopicProvider {
@@ -21,14 +23,44 @@ public class DefaultKafkaTopicProvider implements KafkaTopicProvider {
     @Override
     public void registerTopic(String topicName, Class<? extends SpecificRecord> clazz) {
         map.put(clazz, topicName);
+        LOG.info("Register topic " + topicName);
     }
 
     @Override
     public String fetchTopicForRecord(Class<? extends SpecificRecord> clazz) {
         String result = map.get(clazz);
         if (result == null) {
-            LOG.warn("no registered topic found for " + clazz.getName());
+            LOG.warn("no registered topic found for " + clazz.getSimpleName());
         }
         return result;
+    }
+
+    @Override
+    public SpecificRecord fetchRecordForTopic(String topic) {
+        try {
+            Optional foundRecord = map
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().equals(topic))
+                .map(Map.Entry::getKey)
+                .findFirst();
+
+            if (foundRecord.isPresent()) {
+                Class<? extends SpecificRecord> clazz = (Class<? extends SpecificRecord>) foundRecord.get();
+                SpecificRecord record = clazz.newInstance();
+
+                return record;
+            }
+        } catch (InstantiationException e) {
+            this.handleError(e.getMessage());
+        } catch (IllegalAccessException e) {
+            this.handleError(e.getMessage());
+        }
+
+        return null;
+    }
+
+    private void handleError(String message) {
+        LOG.error("ERROR in DefaultKafkaTopicProvider with the following message: ", message);
     }
 }

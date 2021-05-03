@@ -1,6 +1,8 @@
 package technology.something.spring.kafka.services.impl;
 
 import org.apache.avro.specific.SpecificRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 @Service
 public class DefaultKafkaConsumerService implements KafkaConsumerService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultKafkaConsumerService.class);
+
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -39,7 +43,7 @@ public class DefaultKafkaConsumerService implements KafkaConsumerService {
     private KafkaMessageHandlerService kafkaMessageHandlerService;
 
     @Autowired
-    private ConsumerFactory<String, String> consumerFactory;
+    private ConsumerFactory<String, Object> consumerFactory;
 
     @Autowired
     private DefaultKafkaTopicProvider topicProvider;
@@ -60,20 +64,22 @@ public class DefaultKafkaConsumerService implements KafkaConsumerService {
             ContainerProperties containerProperties = new ContainerProperties(allConsumedTopics.toArray(new String[allConsumedTopics.size()]));
             containerProperties.setMessageListener((MessageListener<String, SpecificRecord>) record -> {
                 KafkaRequestData requestData = new KafkaRequestData(record);
-                Message<KafkaRequestData> message = MessageBuilder.withPayload(requestData).setHeader(KafkaMessageInfo.HEADER_TYPE, record.value().getClass().getName()).build();
+                Message<KafkaRequestData> message = MessageBuilder.withPayload(requestData).setHeader(KafkaMessageInfo.HEADER_TYPE, record.getClass().getName()).build();
                 kafkaMessageHandlerService.handleMessage(message);
             });
             KafkaMessageListenerContainer<String, String> container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
-            container.start();
+            container. start();
         }
     }
 
     private String extractTopicName(Method method) {
-        Parameter[] parameters = method.getParameters();
-        if (parameters.length == 0) {
+        KafkaConsumer consumer = method.getAnnotation(KafkaConsumer.class);
+        if (consumer == null) {
+            LOG.info("Method has no Consumer annotation.");
             return null;
         }
-        Class<?> parameterType = parameters[0].getType();
+
+        Class<?> parameterType = consumer.value();
         if (SpecificRecord.class.isAssignableFrom(parameterType)) {
             return topicProvider.fetchTopicForRecord((Class<? extends SpecificRecord>) parameterType);
         }

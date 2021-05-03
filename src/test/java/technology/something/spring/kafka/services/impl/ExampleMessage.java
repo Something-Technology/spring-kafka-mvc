@@ -5,6 +5,8 @@ import org.apache.avro.specific.SpecificRecord;
 
 public class ExampleMessage implements SpecificRecord {
 
+    public static final String TOPIC = "EXAMPLE_REQUEST";
+
     private  Double longitude;
 
     private Double latitude;

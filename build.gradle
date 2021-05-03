@@ -14,9 +14,8 @@ configurations.all {
 }
 
 dependencies {
-    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
-
     // https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
+    compile 'org.springframework.kafka:spring-kafka:2.6.7'
     implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '2.6.7'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
@@ -35,6 +34,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.4'
 
     // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
+    compile 'org.apache.kafka:kafka-clients:2.7.0'
     implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '2.7.0'
 
     // https://mvnrepository.com/artifact/commons-io/commons-io
@@ -45,18 +45,22 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+
+    // https://mvnrepository.com/artifact/org.apache.avro/avro
+    compile 'org.apache.avro:avro:1.9.2'
+    implementation group: 'org.apache.avro', name: 'avro', version: '1.9.2'
+
+    // https://mvnrepository.com/artifact/org.apache.avro/avro-tools
+    compile 'org.apache.avro:avro-tools:1.9.2'
+    implementation group: 'org.apache.avro', name: 'avro-tools', version: '1.9.2'
+
+    implementation group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.29'
     implementation 'junit:junit:4.12'
 
     testImplementation 'org.mockito:mockito-inline:3.8.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.8.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-
-    // https://mvnrepository.com/artifact/org.apache.avro/avro
-    implementation group: 'org.apache.avro', name: 'avro', version: '1.9.2'
-
-    // https://mvnrepository.com/artifact/org.apache.avro/avro-tools
-    implementation group: 'org.apache.avro', name: 'avro-tools', version: '1.9.2'
 
 }
 
