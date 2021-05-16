@@ -25,16 +25,16 @@ public class ExampleController extends MessageController {
 
         if (topicProvider.fetchTopicForRecord(ExampleMessage.class) == null) {
             topicProvider.registerTopic(ExampleMessage.TOPIC, ExampleMessage.class);
-            LOG.info("Registering topic: ", ExampleMessage.TOPIC);
+            LOG.info("Registering topic: {}", ExampleMessage.TOPIC);
         }
-        LOG.info("Consuming message topic: ", ExampleMessage.TOPIC);
+        LOG.info("Consuming message topic: {}", ExampleMessage.TOPIC);
     }
 
-    public void produceMessage(ExampleMessage message) {
+    public void produceMessage(ExampleResponseMessage message) {
         try {
             producer.handleReturnValue(message, null, null);
         } catch (Exception ex) {
-            LOG.error("ERROR: sending of message failed.", ex.getLocalizedMessage());
+            LOG.error("ERROR: sending of message failed. {}", ex.getLocalizedMessage());
         }
     }
 

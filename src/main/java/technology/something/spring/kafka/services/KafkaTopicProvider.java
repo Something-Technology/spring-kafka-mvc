@@ -8,6 +8,6 @@ public interface KafkaTopicProvider {
 
     public String fetchTopicForRecord(Class<? extends SpecificRecord> clazz);
 
-    public SpecificRecord fetchRecordForTopic(String topic);
+    public Class<? extends SpecificRecord> fetchRecordForTopic(String topic);
 
 }

@@ -31,7 +31,7 @@ public class ProducerTest {
 
     @Test
     void produceMessageWithGivenMessageSendsMessage() throws Exception {
-        ExampleMessage message = new ExampleMessage();
+        ExampleResponseMessage message = new ExampleResponseMessage();
 
         doNothing().when(producerService).handleReturnValue(any(), any(), any());
 
