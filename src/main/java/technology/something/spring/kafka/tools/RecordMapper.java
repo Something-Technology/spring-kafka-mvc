@@ -6,6 +6,8 @@ import org.apache.avro.reflect.ReflectData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.messaging.Message;
+import technology.something.spring.kafka.KafkaRequestData;
 
 public class RecordMapper {
 
@@ -38,6 +40,13 @@ public class RecordMapper {
         }
 
         return null;
+    }
+
+    public static final GenericRecord mapMessagetToGenericRecord(Message<?> message) {
+        KafkaRequestData data = message.getPayload() != null ? (KafkaRequestData) message.getPayload() : null;
+        GenericRecord record = data.getConsumerRecord() != null ? (GenericRecord) data.getConsumerRecord().value() : null;
+
+        return record;
     }
 
 }
