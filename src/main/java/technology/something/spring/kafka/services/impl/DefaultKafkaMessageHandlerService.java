@@ -1,10 +1,12 @@
 package technology.something.spring.kafka.services.impl;
 
+import org.apache.avro.specific.SpecificRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.messaging.Message;
@@ -23,6 +25,11 @@ import technology.something.spring.kafka.services.KafkaMethodReturnValueHandlerS
 
 import java.lang.reflect.Method;
 import java.util.*;
+
+/**
+ * Kafka message handler is responsible for the mapping of the Kafka messages.
+ * The Kafka message will be read and mapped to the right type
+ */
 
 @Service
 public class DefaultKafkaMessageHandlerService extends AbstractMethodMessageHandler<KafkaMessageInfo>implements KafkaMessageHandlerService {
@@ -47,7 +54,7 @@ public class DefaultKafkaMessageHandlerService extends AbstractMethodMessageHand
     @Override public KafkaMessageInfo getMappingForMethod(Method method, Class<?> handlerType) {
         KafkaConsumer consumer = method.getAnnotation(KafkaConsumer.class);
         if (consumer != null) {
-            return new KafkaMessageInfo(method.getParameters()[0].getType().getName().toString());
+            return new KafkaMessageInfo(consumer.value().getName());
         }
         return null;
     }
@@ -87,5 +94,4 @@ public class DefaultKafkaMessageHandlerService extends AbstractMethodMessageHand
 
         return null;
     }
-
 }

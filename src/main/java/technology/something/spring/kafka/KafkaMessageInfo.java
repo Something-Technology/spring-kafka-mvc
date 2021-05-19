@@ -1,5 +1,8 @@
 package technology.something.spring.kafka;
 
+/**
+ * Kafka messages info holds the message type of a message.
+ */
 public class KafkaMessageInfo {
 
     public static final String HEADER_TYPE = "type";

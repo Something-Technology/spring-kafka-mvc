@@ -17,7 +17,7 @@ import java.util.Collection;
 @Service
 public class DefaultKafkaMethodReturnValueHandlerService implements KafkaMethodReturnValueHandlerService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaMethodReturnValueHandlerService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultKafkaMethodReturnValueHandlerService.class);
 
     @Autowired
     private KafkaTemplate<String, SpecificRecord> sendingTemplate;
