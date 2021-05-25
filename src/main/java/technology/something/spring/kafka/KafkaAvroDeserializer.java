@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import technology.something.spring.kafka.services.impl.DefaultKafkaTopicProvider;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class KafkaAvroDeserializer<T> implements Deserializer {
@@ -37,10 +38,11 @@ public class KafkaAvroDeserializer<T> implements Deserializer {
         try {
             Class<? extends SpecificRecord> record = topicProvider.fetchRecordForTopic(topic);
             Schema schema = record.newInstance().getSchema();
+            String input = new String(bytes, StandardCharsets.UTF_8);
 
             if (bytes != null) {
                 DatumReader datumReader = new GenericDatumReader<GenericRecord>(schema);
-                Decoder decoder = DecoderFactory.get().binaryDecoder(bytes, null);
+                Decoder decoder = DecoderFactory.get().jsonDecoder(schema, input);
                 GenericRecord genericRecord = (GenericRecord) datumReader.read(null, decoder);
                 returnObject = (T) genericRecord;
             }
